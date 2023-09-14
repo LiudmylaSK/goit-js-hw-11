@@ -81,22 +81,52 @@ loadMoreBtn.addEventListener('click', async () => {
   }
 });
 
+// function createPhotoCard(image) {
+//   const photoCard = document.createElement('div');
+//   photoCard.classList.add('photo-card');
+
+//   const imageLink = document.createElement('a');
+//   imageLink.href = image.largeImageURL;
+//   imageLink.target = '_blank';
+
+//   const imageElement = document.createElement('img');
+//   imageElement.src = image.webformatURL;
+//   imageElement.alt = image.tags;
+//   imageElement.loading = 'lazy';
+
+//   imageLink.appendChild(imageElement);
+
+//   photoCard.appendChild(imageLink);
+
+//   const infoDiv = document.createElement('div');
+//   infoDiv.classList.add('info');
+//   infoDiv.innerHTML = `
+//     <p class="info-item"><b>Likes:</b> ${image.likes}</p>
+//     <p class="info-item"><b>Views:</b> ${image.views}</p>
+//     <p class="info-item"><b>Comments:</b> ${image.comments}</p>
+//     <p class="info-item"><b>Downloads:</b> ${image.downloads}</p>
+//   `;
+
+//   photoCard.appendChild(infoDiv);
+
+//   return photoCard;
+// }
+
 function createPhotoCard(image) {
+  const photoCardLink = document.createElement('a');
+  photoCardLink.href = image.largeImageURL;
+  photoCardLink.target = '_blank';
+  photoCardLink.classList.add('link');
+
   const photoCard = document.createElement('div');
   photoCard.classList.add('photo-card');
-
-  const imageLink = document.createElement('a');
-  imageLink.href = image.largeImageURL;
-  imageLink.target = '_blank';
 
   const imageElement = document.createElement('img');
   imageElement.src = image.webformatURL;
   imageElement.alt = image.tags;
   imageElement.loading = 'lazy';
 
-  imageLink.appendChild(imageElement);
-
-  photoCard.appendChild(imageLink);
+  photoCard.appendChild(imageElement);
 
   const infoDiv = document.createElement('div');
   infoDiv.classList.add('info');
@@ -109,7 +139,9 @@ function createPhotoCard(image) {
 
   photoCard.appendChild(infoDiv);
 
-  return photoCard;
+  photoCardLink.appendChild(photoCard);
+
+  return photoCardLink;
 }
 
 Notiflix.Notify.init({
