@@ -1,0 +1,119 @@
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: blanchedalmond;
+  height: 100vh;
+  margin: 0;
+  background-color: skyblue;
+  padding: 0 50px;
+}
+
+.search-form {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  max-width: 400px;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 20px;
+
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  margin: 30px auto;
+}
+
+.container {
+  width: 80%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 20px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.search-form input[type='text'] {
+  flex: 1;
+  border: none;
+  padding: 5px;
+  font-size: 16px;
+}
+
+.search-btn {
+  border: none;
+  background-color: #dcdcdc;
+  /* outline: none; */
+  border-radius: 5px;
+  padding: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.search-btn:hover,
+.search-btn:focus {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.gallery {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.photo-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: top;
+  align-items: center;
+  border-radius: 10px;
+  overflow: hidden;
+
+  max-width: 350px;
+  min-height: 100px;
+}
+
+.load-more {
+  border: none;
+  border-radius: 10px;
+  font-size: 24px;
+  padding: 10px;
+  background-color: #dcdcdc;
+  /* outline: none; */
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.load-more:hover,
+.load-more:focus {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.scroll-to-top-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: none;
+  background-color: transparent;
+  color: #185fab;
+  border: 2px solid #579ae2;
+  border-radius: 50% 0;
+  width: 60px;
+  height: 80px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.scroll-to-top-btn:hover,
+.scroll-to-top-btn:focus {
+  background-color: #007bff;
+  color: #fff;
+}
