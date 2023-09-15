@@ -157,7 +157,7 @@ async function loadMoreData(e) {
 
   try {
     if (pixabayApi.page === totalPages) {
-      Notify.info("You've reached the end of search results");
+      Notiflix.Notify.info("You've reached the end of search results");
       observer.unobserve(refs.list);
 
       return;
