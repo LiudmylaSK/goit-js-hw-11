@@ -372,7 +372,6 @@ Notiflix.Notify.init({
 });
 
 let lightbox = new SimpleLightbox('.gallery a', {
-  captionsSelector: 'img',
   captions: true,
   captionDelay: 250,
   captionsData: 'alt',
