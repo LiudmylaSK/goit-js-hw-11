@@ -1,31 +1,29 @@
-// api-js
+// api-js.js
 
 import axios from 'axios';
 
-const API_KEY = '39444367-c9719dfa6fa0cb49879b0c228';
-const perPage = 40;
+export class PixabayAPI {
+  #BASE_URL = 'https://pixabay.com/api/';
+  #API_KEY = '39444367-c9719dfa6fa0cb49879b0c228';
 
-export async function fetchData(searchQuery, page) {
-  try {
-    const response = await axios.get(
-      `https://pixabay.com/api/?key=${API_KEY}&q=${searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=${perPage}`
-    );
+  constructor(perPage) {
+    this.per_page = perPage;
+    this.page = 1;
+    this.q = '';
+  }
 
-    if (response.status !== 200) {
-      throw new Error('Network response was not ok');
-    }
-
-    const data = response.data;
-
-    if (!data || data.hits.length === 0) {
-      throw new Error('No data found');
-    }
-
-    return data;
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    return null;
+  async getPhotos() {
+    const response = await axios.get(`${this.#BASE_URL}`, {
+      params: {
+        key: this.#API_KEY,
+        q: this.q,
+        page: this.page,
+        per_page: this.per_page,
+        image_type: 'photo',
+        orientation: 'horizontal',
+        safesearch: true,
+      },
+    });
+    return response.data;
   }
 }
-
-export { perPage };
