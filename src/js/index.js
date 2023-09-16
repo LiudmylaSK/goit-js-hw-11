@@ -1,43 +1,26 @@
+import 'simplelightbox/dist/simple-lightbox.min.css';
+import SimpleLightbox from 'simplelightbox';
 import Notiflix from 'notiflix';
 import { PixabayAPI } from './api-js';
-import SimpleLightbox from 'simplelightbox';
-import 'simplelightbox/dist/simple-lightbox.min.css';
-
-import { toggleScrollToTopButton, scrollToTop } from './scrollToTop';
+import { toggleScrollToTopButton, scrollToTop } from './scroll-to-top';
 
 const refs = {
   form: document.querySelector('.search-form'),
   gallery: document.querySelector('.gallery'),
   list: document.querySelector('.list'),
-  loadMoreBtn: document.querySelector('.load-more'),
 };
 
-refs.loadMoreBtn.classList.add('hidden');
-
-let page = 1;
-let totalHits = 0;
 let totalPages = 0;
-let currentPage = 1;
+let totalHits = 0;
 
 const pixabayApi = new PixabayAPI(40);
 
-refs.form.addEventListener('submit', async e => {
-  e.preventDefault();
-  const searchQuery = refs.form.searchQuery.value.trim();
-
-  if (searchQuery === '') {
-    return;
-  }
-
-  pixabayApi.q = searchQuery;
-  refs.gallery.innerHTML = '';
-  page = 1;
-
+async function performSearch() {
   try {
     const { totalHits, hits } = await pixabayApi.getPhotos();
+    totalPages = Math.ceil(totalHits / pixabayApi.per_page);
 
     totalHits = totalHits;
-    totalPages = Math.ceil(totalHits / pixabayApi.per_page);
 
     if (totalHits === 0) {
       Notiflix.Notify.failure(
@@ -45,7 +28,6 @@ refs.form.addEventListener('submit', async e => {
       );
     } else {
       Notiflix.Notify.success(`Hooray! We found: ${totalHits} images.`);
-
       refs.gallery.innerHTML = renderMarkup(hits);
       lightbox.refresh();
     }
@@ -54,48 +36,30 @@ refs.form.addEventListener('submit', async e => {
       return;
     }
     observer.observe(refs.list);
-
-    if (totalPages > 1) {
-      refs.loadMoreBtn.classList.remove('hidden');
-    }
   } catch (error) {
-    console.error(error);
+    Notiflix.Notify.failure(
+      'Sorry, there was an error while fetching images. Please try again later.'
+    );
   } finally {
     refs.form.reset();
   }
-});
-
-refs.loadMoreBtn.addEventListener('click', loadMoreImages);
-
-async function loadMoreImages() {
-  currentPage++;
-
-  try {
-    pixabayApi.page = currentPage;
-
-    const { hits } = await pixabayApi.getPhotos();
-
-    if (hits.length > 0) {
-      refs.gallery.innerHTML = refs.gallery.innerHTML + renderMarkup(hits);
-
-      if (currentPage >= totalPages) {
-        refs.loadMoreBtn.classList.add('hidden');
-        Notiflix.Notify.info(
-          "We're sorry, but you've reached the end of search results."
-        );
-      }
-
-      scrollToNextPage();
-    } else {
-      Notiflix.Notify.failure(
-        'Sorry, there are no more images matching your search query. Please try again.'
-      );
-      refs.loadMoreBtn.classList.add('hidden');
-    }
-  } catch (error) {
-    console.error(error);
-  }
 }
+
+refs.form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const searchQuery = refs.form.searchQuery.value.trim();
+
+  if (searchQuery === '') {
+    Notiflix.Notify.info('Please enter a search query');
+    return;
+  }
+
+  pixabayApi.q = searchQuery;
+  refs.gallery.innerHTML = '';
+  pixabayApi.page = 1;
+
+  performSearch();
+});
 
 function renderMarkup(card) {
   return card
@@ -150,23 +114,27 @@ const observer = new IntersectionObserver(
   }
 );
 
-async function loadMoreData(e) {
+async function loadMoreData() {
+  if (pixabayApi.page === totalPages) {
+    Notiflix.Notify.info(
+      "We're sorry, but you've reached the end of search results."
+    );
+    return;
+  }
   pixabayApi.page += 1;
 
-  const { hits } = await pixabayApi.getPhotos();
-
   try {
-    if (pixabayApi.page === totalPages) {
-      // Notiflix.Notify.info("You've reached the end of search results");
-      observer.unobserve(refs.list);
+    const { hits } = await pixabayApi.getPhotos();
 
-      return;
+    if (hits.length > 0) {
+      refs.gallery.insertAdjacentHTML('beforeend', renderMarkup(hits));
+      lightbox.refresh();
+
+      scrollToNextPage();
+    } else {
+      observer.disconnect();
     }
-    refs.gallery.insertAdjacentHTML('beforeend', renderMarkup(hits));
-    lightbox.refresh();
-  } catch (error) {
-    console.error(error);
-  }
+  } catch (error) {}
 }
 
 function scrollToNextPage() {
@@ -185,7 +153,6 @@ Notiflix.Notify.init({
   position: 'left-top',
   distance: '10px',
   fontSize: '18px',
-
   borderRadius: '50px',
   timeout: 5000,
   clickToClose: true,
