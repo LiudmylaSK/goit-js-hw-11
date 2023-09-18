@@ -15,6 +15,19 @@ let totalHits = 0;
 
 const pixabayApi = new PixabayAPI(40);
 
+const observer = new IntersectionObserver(
+  (entries, observer) => {
+    if (entries[0].isIntersecting) {
+      loadMoreData();
+    }
+  },
+  {
+    root: null,
+    rootMargin: '600px',
+    threshold: 1,
+  }
+);
+
 async function performSearch() {
   try {
     const { totalHits, hits } = await pixabayApi.getPhotos();
@@ -44,22 +57,6 @@ async function performSearch() {
     refs.form.reset();
   }
 }
-
-refs.form.addEventListener('submit', async e => {
-  e.preventDefault();
-  const searchQuery = refs.form.searchQuery.value.trim();
-
-  if (searchQuery === '') {
-    Notiflix.Notify.info('Please enter a search query');
-    return;
-  }
-
-  pixabayApi.q = searchQuery;
-  refs.gallery.innerHTML = '';
-  pixabayApi.page = 1;
-
-  performSearch();
-});
 
 function renderMarkup(card) {
   return card
@@ -101,19 +98,6 @@ function renderMarkup(card) {
     .join('');
 }
 
-const observer = new IntersectionObserver(
-  (entries, observer) => {
-    if (entries[0].isIntersecting) {
-      loadMoreData();
-    }
-  },
-  {
-    root: null,
-    rootMargin: '600px',
-    threshold: 1,
-  }
-);
-
 async function loadMoreData() {
   if (pixabayApi.page === totalPages) {
     Notiflix.Notify.info(
@@ -130,29 +114,45 @@ async function loadMoreData() {
       refs.gallery.insertAdjacentHTML('beforeend', renderMarkup(hits));
       lightbox.refresh();
 
-      scrollToNextPage();
+      // scrollToNextPage();
     } else {
       observer.disconnect();
     }
   } catch (error) {}
 }
 
-function scrollToNextPage() {
-  const { height: cardHeight } = document
-    .querySelector('.gallery')
-    .firstElementChild.getBoundingClientRect();
+refs.form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const searchQuery = refs.form.searchQuery.value.trim();
 
-  window.scrollBy({
-    top: cardHeight * 2,
-    behavior: 'smooth',
-  });
-}
+  if (searchQuery === '') {
+    Notiflix.Notify.info('Please enter a search query');
+    return;
+  }
+
+  pixabayApi.q = searchQuery;
+  refs.gallery.innerHTML = '';
+  pixabayApi.page = 1;
+
+  performSearch();
+});
+
+// function scrollToNextPage() {
+//   const { height: cardHeight } = document
+//     .querySelector('.gallery')
+//     .firstElementChild.getBoundingClientRect();
+
+//   window.scrollBy({
+//     top: cardHeight * 2,
+//     behavior: 'smooth',
+//   });
+// }
 
 Notiflix.Notify.init({
-  width: '350px',
+  width: '280px',
   position: 'left-top',
   distance: '10px',
-  fontSize: '18px',
+  fontSize: '16px',
   borderRadius: '50px',
   timeout: 5000,
   clickToClose: true,
